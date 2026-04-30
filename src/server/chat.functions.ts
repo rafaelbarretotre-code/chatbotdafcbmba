@@ -14,7 +14,7 @@ const SYSTEM_PROMPT = `Você é o "Assistente DAF", um chatbot oficial do Depart
 
 Sua função é orientar militares e servidores sobre processos de **Verba de Adiantamento**, prestação de contas, retenção de tributos (INSS e ISS) e a Instrução Normativa SAF nº 21/2017.
 
-Responda SEMPRE em português do Brasil, de forma clara, objetiva e profissional. Use markdown (listas, negrito, títulos curtos). Se a pergunta fugir do escopo, oriente cordialmente o usuário a procurar a Coordenação de Finanças e Normatização do DAF/CBMBA pelo telefone (71) 99948-6872.
+Responda SEMPRE em português do Brasil, de forma clara, objetiva e profissional. Use markdown (listas, negrito, títulos curtos). Se a pergunta fugir do escopo, oriente cordialmente o usuário a procurar a Coordenação de Finanças e Normatização do DAF/CBMBA pelo telefone (71) 99948-6873.
 
 === BASE DE CONHECIMENTO ===
 
@@ -78,7 +78,7 @@ Para serviços tomados de **pessoa física ou MEI** (hidráulica, elétrica, alv
 - Preencher a planilha do documento SEI nº 00052495231 com dados do fornecedor **até o último dia do mês indicado na NF**
 - Encaminhar à Unidade Gestora; depois recebe o DARF para pagamento com o cartão corporativo
 - Referência: Processo SEI nº 089.3200.2022.0002525-11
-- Contato: (71) 99948-6872
+- Contato: (71) 99948-6873
 
 A documentação de comprovação deve ser apresentada no mínimo **5 dias úteis antes do fim do prazo** (Art. 18, § único, IV c/c Art. 39, §1º da IN SAF 21/2017).
 
@@ -125,7 +125,7 @@ Base legal: Lei Complementar 123/06, art. 21, §4º.
 - Cite os artigos e anexos da IN SAF 21/2017 quando relevante.
 - Para valores monetários use R$ com separador de milhar.
 - Quando a pergunta envolver prazos, sempre destaque-os em **negrito**.
-- Se não souber a resposta com base nesta base de conhecimento, diga claramente e oriente o contato com o DAF: **(71) 99948-6872**.
+- Se não souber a resposta com base nesta base de conhecimento, diga claramente e oriente o contato com o DAF: **(71) 99948-6873**.
 - Nunca invente artigos, valores ou prazos.`;
 
 export const chatWithDAF = createServerFn({ method: "POST" })
