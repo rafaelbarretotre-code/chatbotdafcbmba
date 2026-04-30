@@ -184,7 +184,7 @@ function ChatPage() {
           </button>
         </form>
         <div className="pb-3 text-center text-[10px] uppercase tracking-widest text-muted-foreground">
-          DAF · CBMBA · (71) 99948-6872
+          DAF · CBMBA · (71) 99948-6873
         </div>
       </footer>
     </main>
