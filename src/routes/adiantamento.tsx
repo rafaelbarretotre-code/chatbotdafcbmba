@@ -32,7 +32,7 @@ function ChatPage() {
     {
       role: "assistant",
       content:
-        "Olá! Sou o **Assistente DAF** do 3º BBM. Posso esclarecer dúvidas sobre **Verba de Adiantamento**, prestação de contas, retenção de INSS/ISS e a IN SAF nº 21/2017.\n\nComo posso ajudar?",
+        "Olá! Sou o **Assistente DAF** do 3º BBM. Posso esclarecer dúvidas sobre **Verba de Adiantamento**.\n\nComo posso ajudar?",
     },
   ]);
   const [input, setInput] = useState("");
