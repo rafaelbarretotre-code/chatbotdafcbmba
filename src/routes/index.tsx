@@ -73,12 +73,6 @@ function Capa() {
           3º Batalhão de Bombeiros Militar
         </p>
 
-        <p className="mt-8 max-w-2xl text-balance text-base leading-relaxed text-white/70 md:text-lg">
-          Tire suas dúvidas sobre <strong className="text-white">Verba de
-          Adiantamento</strong>, prestação de contas, retenção de tributos e a
-          Instrução Normativa SAF nº 21/2017 com nosso assistente virtual.
-        </p>
-
         <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row">
           <Link
             to="/adiantamento"
