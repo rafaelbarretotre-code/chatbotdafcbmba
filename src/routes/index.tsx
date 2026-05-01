@@ -32,7 +32,7 @@ function Capa() {
             <img
               src={brasao}
               alt="Brasão CBMBA"
-              className="h-10 w-10 object-contain drop-shadow-lg"
+              className="h-10 w-10 rounded-full object-cover drop-shadow-lg"
             />
             <div className="text-xs uppercase tracking-widest text-accent">
               CBMBA · 3º BBM
@@ -54,7 +54,7 @@ function Capa() {
           <img
             src={brasao}
             alt="Brasão do Corpo de Bombeiros Militar da Bahia"
-            className="h-44 w-44 object-contain drop-shadow-[0_10px_40px_rgba(0,0,0,0.6)] md:h-56 md:w-56"
+            className="h-44 w-44 rounded-full object-cover drop-shadow-[0_10px_40px_rgba(0,0,0,0.6)] md:h-56 md:w-56"
           />
         </div>
 

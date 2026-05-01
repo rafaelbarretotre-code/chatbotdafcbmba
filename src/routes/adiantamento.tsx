@@ -85,7 +85,7 @@ function ChatPage() {
             <img
               src={brasao}
               alt="Brasão CBMBA"
-              className="h-10 w-10 object-contain"
+              className="h-10 w-10 rounded-full object-cover"
             />
             <div className="leading-tight">
               <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent">
