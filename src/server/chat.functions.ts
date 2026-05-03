@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import itensAdiantamento from "./itens-adiantamento.md?raw";
 
 const messageSchema = z.object({
   role: z.enum(["user", "assistant"]),
@@ -126,7 +127,13 @@ Base legal: Lei Complementar 123/06, art. 21, §4º.
 - Para valores monetários use R$ com separador de milhar.
 - Quando a pergunta envolver prazos, sempre destaque-os em **negrito**.
 - Se não souber a resposta com base nesta base de conhecimento, diga claramente e oriente o contato com o DAF: **(71) 99948-6873**.
-- Nunca invente artigos, valores ou prazos.`;
+- Nunca invente artigos, valores ou prazos.
+
+## 7. ITENS DE DESPESA POR ELEMENTO/SUBELEMENTO (3.3.90.30 — Material de Consumo)
+
+Use a tabela abaixo para identificar **em qual subelemento de despesa** um determinado item se enquadra dentro da Verba de Adiantamento. Quando o usuário perguntar "posso comprar X com adiantamento?" ou "em qual rubrica/subelemento entra Y?", localize o item na lista, informe o **código (ex.: 30.02)**, o **nome da categoria** e cite outros itens da mesma categoria quando útil.
+
+${itensAdiantamento}`;
 
 export const chatWithDAF = createServerFn({ method: "POST" })
   .inputValidator((data) => inputSchema.parse(data))
