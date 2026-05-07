@@ -4,11 +4,11 @@ import brasao from "@/assets/cbmba-brasao.png";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Central de Ajuda DAF — 3º BBM | CBMBA" },
+      { title: "Central de Ajuda DAF — CBMBA" },
       {
         name: "description",
         content:
-          "Central de Ajuda do Departamento de Auditoria e Finanças do 3º Batalhão de Bombeiros Militar da Bahia. Tire dúvidas sobre Verba de Adiantamento.",
+          "Central de Ajuda do Departamento de Auditoria e Finanças do Corpo de Bombeiros Militar da Bahia. Tire dúvidas sobre Verba de Adiantamento.",
       },
     ],
   }),
@@ -35,7 +35,7 @@ function Capa() {
               className="h-10 w-10 rounded-full object-cover drop-shadow-lg"
             />
             <div className="text-xs uppercase tracking-widest text-accent">
-              CBMBA · 3º BBM
+              CBMBA
             </div>
           </div>
           <div className="text-xs uppercase tracking-widest text-white/60">
@@ -70,7 +70,7 @@ function Capa() {
         </h1>
 
         <p className="mt-4 text-lg font-semibold uppercase tracking-widest text-white/80">
-          3º Batalhão de Bombeiros Militar
+          Corpo de Bombeiros Militar
         </p>
 
         <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row">
@@ -139,7 +139,7 @@ function Capa() {
       </section>
 
       <footer className="relative z-10 border-t border-white/10 px-6 py-6 text-center text-xs uppercase tracking-widest text-white/40">
-        Corpo de Bombeiros Militar da Bahia · DAF / 3º BBM
+        Corpo de Bombeiros Militar da Bahia · DAF
       </footer>
     </main>
   );
