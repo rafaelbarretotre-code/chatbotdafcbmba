@@ -11,7 +11,7 @@ export const Route = createFileRoute("/adiantamento")({
       {
         name: "description",
         content:
-          "Chatbot oficial do DAF/3º BBM para esclarecer dúvidas sobre Verba de Adiantamento, prestação de contas e tributos.",
+          "Chatbot oficial do DAF/CBMBA para esclarecer dúvidas sobre Verba de Adiantamento, prestação de contas e tributos.",
       },
     ],
   }),
@@ -32,7 +32,7 @@ function ChatPage() {
     {
       role: "assistant",
       content:
-        "Olá! Sou o **Assistente DAF** do 3º BBM. Posso esclarecer dúvidas sobre **Verba de Adiantamento**.\n\nComo posso ajudar?",
+        "Olá! Sou o **Assistente DAF** do CBMBA. Posso esclarecer dúvidas sobre **Verba de Adiantamento**.\n\nComo posso ajudar?",
     },
   ]);
   const [input, setInput] = useState("");
@@ -92,7 +92,7 @@ function ChatPage() {
                 Assistente DAF
               </div>
               <div className="text-sm font-semibold text-white">
-                Verba de Adiantamento · 3º BBM
+                Verba de Adiantamento · CBMBA
               </div>
             </div>
           </Link>
