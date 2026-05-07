@@ -21,10 +21,18 @@ export const Route = createFileRoute("/adiantamento")({
 type Message = { role: "user" | "assistant"; content: string };
 
 const SUGESTOES = [
-  "Quais documentos preciso para a Concessão do Adiantamento?",
-  "Quais os limites atuais de concessão para 2026?",
-  "Como recolher o INSS de prestador pessoa física?",
-  "Quando NÃO devo reter ISS de empresa do Simples?",
+  "Quais documentos compõem o processo de Concessão do Adiantamento no SEI?",
+  "Quais documentos são exigidos na Comprovação (prestação de contas)?",
+  "Quais os limites de concessão e aplicação válidos a partir de 01/01/2026?",
+  "Qual o prazo para apresentar a comprovação do Adiantamento?",
+  "Como funciona o recolhimento do INSS patronal (20%) para prestador PF ou MEI?",
+  "Quando NÃO devo reter ISS de empresa optante pelo Simples Nacional?",
+  "Qual alíquota de ISS aplicar quando a empresa não informar no documento fiscal?",
+  "Em qual subelemento de despesa (30.xx) entra a compra de material de escritório?",
+  "Posso adquirir material de limpeza com Verba de Adiantamento? Em qual rubrica?",
+  "Quais são as hipóteses de uso do Adiantamento previstas no Art. 5º da IN SAF 21/2017?",
+  "Quando é obrigatório apresentar 3 cotações de preço?",
+  "O que fazer em caso de devolução de recurso fora do prazo?",
 ];
 
 function ChatPage() {
