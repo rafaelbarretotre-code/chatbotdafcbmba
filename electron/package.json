@@ -1,0 +1,7 @@
+{
+  "name": "chatbot-daf-cbmba",
+  "version": "1.0.0",
+  "main": "electron/main.cjs",
+  "description": "Central de Ajuda DAF - CBMBA",
+  "author": "CBMBA"
+}
