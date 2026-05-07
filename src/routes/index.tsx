@@ -70,7 +70,7 @@ function Capa() {
         </h1>
 
         <p className="mt-4 text-lg font-semibold uppercase tracking-widest text-white/80">
-          Corpo de Bombeiros Militar
+          Corpo de Bombeiros Militar da Bahia
         </p>
 
         <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row">
