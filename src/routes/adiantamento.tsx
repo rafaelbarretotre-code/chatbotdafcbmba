@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import brasao from "@/assets/cbmba-brasao.png";
-import { chatWithDAF } from "@/server/chat.functions";
+import { chatWithDAF } from "@/lib/chat.functions";
 
 export const Route = createFileRoute("/adiantamento")({
   head: () => ({
