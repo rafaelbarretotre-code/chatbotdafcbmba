@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import itensAdiantamento from "./itens-adiantamento.md?raw";
+import subelementosData from "./subelementos.json";
 
 const messageSchema = z.object({
   role: z.enum(["user", "assistant"]),
@@ -11,53 +11,74 @@ const inputSchema = z.object({
   messages: z.array(messageSchema).min(1).max(40),
 });
 
+type Sub = { code: string; name: string; desc: string; items: string[] };
+const SUBELEMENTOS = subelementosData as Sub[];
+
 // ============================================================
-// BASE DE CONHECIMENTO — pesquisada localmente, sem IA
+// FAQ — única fonte de informação consultada pelo assistente.
+// Cada entrada é uma pergunta + resposta + palavras-chave.
 // ============================================================
-const KB: { title: string; keywords: string[]; body: string }[] = [
+type FAQ = { q: string; a: string; keywords: string[] };
+
+const FAQ_NORMATIVO: FAQ[] = [
+  // ---------- CONCESSÃO ----------
   {
-    title: "Concessão do Adiantamento (Art. 39, §2º, I)",
+    q: "Quais documentos compõem o processo de Concessão do Adiantamento?",
     keywords: [
-      "concessao", "concessão", "iniciar", "abrir processo", "sei", "pad",
-      "ped", "empenho", "liquidacao", "liquidação", "nob", "ofício", "oficio",
-      "documentos concessão", "abertura",
+      "concessao", "concessão", "documentos concessão", "abertura", "iniciar processo",
+      "sei concessão", "pad", "ped", "empenho", "liquidacao", "liquidação", "nob",
+      "ofício", "oficio", "art. 39 i", "art 39 i",
     ],
-    body: `### Concessão do Adiantamento (Art. 39, §2º, I da IN SAF 21/2017)
+    a: `### Concessão do Adiantamento (Art. 39, §2º, I — IN SAF 21/2017)
+
 Iniciar processo no SEI tipo **"Adiantamento: Concessão e Prestação de Contas"** contendo:
 
-1. Solicitação de Adiantamento (modelo SEI)
-2. Pedido de Adiantamento (PAD) — assinado pelo Ordenador de Despesa e responsável pela aplicação
-3. Pedido de Empenho (PED) — assinado pelo Ordenador
-4. Empenho (EMP) — assinado pelo Ordenador
-5. Liquidação (LIQ)
-6. Nota de Ordem Bancária (NOB)
-7. Ofício da Unidade Gestora encaminhando o processo com orientações ao responsável`,
+1. **Solicitação de Adiantamento** (modelo SEI)
+2. **Pedido de Adiantamento (PAD)** — assinado pelo Ordenador de Despesa e responsável pela aplicação
+3. **Pedido de Empenho (PED)** — assinado pelo Ordenador
+4. **Empenho (EMP)** — assinado pelo Ordenador
+5. **Liquidação (LIQ)**
+6. **Nota de Ordem Bancária (NOB)**
+7. **Ofício da Unidade Gestora** encaminhando o processo com orientações ao responsável pela aplicação`,
   },
   {
-    title: "Comprovação / Prestação de Contas (Art. 39, §2º, II)",
-    keywords: [
-      "comprovacao", "comprovação", "prestacao", "prestação", "contas",
-      "documentos prestação", "nf-e", "nota fiscal", "cupom", "recibo",
-      "almoxarifado", "declaração de recebimento", "extrato", "certidão",
-      "três orçamentos", "3 orçamentos", "orçamento",
-    ],
-    body: `### Comprovação do Adiantamento (Art. 39, §2º, II da IN SAF 21/2017)
-Iniciar processo SEI relacionado ao da Concessão, contendo:
+    q: "O que é o PAD (Pedido de Adiantamento) e quem assina?",
+    keywords: ["pad", "pedido de adiantamento", "quem assina pad", "ordenador"],
+    a: `O **PAD (Pedido de Adiantamento)** é o documento SEI que formaliza o pedido de concessão. Deve ser assinado pelo **Ordenador de Despesa** e pelo **responsável pela aplicação** do recurso.`,
+  },
+  {
+    q: "Qual é o tipo de processo SEI usado para Adiantamento?",
+    keywords: ["tipo processo sei", "sei tipo", "qual processo sei"],
+    a: `O processo SEI deve ser do tipo **"Adiantamento: Concessão e Prestação de Contas"**. O processo de Comprovação é aberto **relacionado** ao processo de Concessão.`,
+  },
 
-1. Pedido de Material com declaração do Almoxarifado autorizando a aquisição
-2. Documentos hábeis (NF-e, cupons fiscais, recibos) — **um documento SEI por documento hábil**
-3. Declaração de recebimento do material/serviço (datada e assinada)
-4. Para serviços (alínea "h"): **3 orçamentos** + autorização do Ordenador
-5. Em contratação de PJ: comprovantes de retenção de tributos quando necessário
+  // ---------- COMPROVAÇÃO ----------
+  {
+    q: "Quais documentos são exigidos na Comprovação (prestação de contas) do Adiantamento?",
+    keywords: [
+      "comprovacao", "comprovação", "prestacao de contas", "prestação de contas",
+      "documentos prestação", "documentos comprovação", "art. 39 ii", "art 39 ii",
+      "nf-e", "nota fiscal", "cupom", "recibo", "almoxarifado",
+      "declaração de recebimento", "extrato", "certidão de regularidade",
+    ],
+    a: `### Comprovação do Adiantamento (Art. 39, §2º, II — IN SAF 21/2017)
+
+Iniciar processo SEI **relacionado ao da Concessão**, contendo:
+
+1. **Pedido de Material** com declaração do Almoxarifado autorizando a aquisição
+2. **Documentos hábeis** (NF-e, cupons fiscais, recibos) — **um documento SEI por documento hábil**
+3. **Declaração de recebimento** do material/serviço (datada e assinada)
+4. Para **serviços (alínea "h")**: **3 orçamentos** + autorização do Ordenador
+5. Em **contratação de PJ**: comprovantes de retenção de tributos quando necessário
    - Calcular retenções (ex.: ISS) e pagar o **valor líquido** ao prestador
-   - Recolher o valor retido com o próprio cartão
+   - Recolher o valor retido com o próprio cartão de Adiantamento
    - Inserir DAM e comprovante de pagamento
-6. Saque em espécie: justificativa assinada pelo Ordenador
-7. Devolução de recurso: DAE + comprovante
-8. Comprovação de Adiantamento (modelo SEI)
-9. Extrato bancário com **TODOS** os lançamentos
-10. Justificativa de inconsistências (assinada pelo Ordenador)
-11. Certidão de Regularidade (confeccionada e assinada na Unidade Gestora)
+6. **Saque em espécie**: justificativa assinada pelo Ordenador
+7. **Devolução de recurso**: DAE + comprovante
+8. **Comprovação de Adiantamento** (modelo SEI)
+9. **Extrato bancário** com **TODOS** os lançamentos
+10. **Justificativa de inconsistências** (assinada pelo Ordenador)
+11. **Certidão de Regularidade** (confeccionada e assinada na Unidade Gestora)
 
 **Observações:**
 - Documentos externos: 1 arquivo = 1 documento
@@ -67,49 +88,119 @@ Iniciar processo SEI relacionado ao da Concessão, contendo:
 - Documentos Digitalizados: devem ser autenticados`,
   },
   {
-    title: "Limites de Concessão e Aplicação (Anexo VII — 01/01/2026)",
-    keywords: [
-      "limite", "limites", "valor", "valores", "anexo vii", "anexo 7",
-      "2026", "concessão valor", "aplicação valor", "miúda", "miuda",
-      "reparo", "alínea a", "alinea a", "alínea h", "alinea h",
-    ],
-    body: `### Limites — Anexo VII (válidos a partir de 01/01/2026)
-
-**Concessão:**
-- Despesas Miúdas (alínea "a"): **R$ 3.929,00**
-- Reparos / Adaptação / Recuperação de Bens Móveis e Imóveis (alínea "h"): **R$ 3.929,00**
-
-**Aplicação:**
-- Despesas das alíneas "a" e "e" sem documento hábil (mediante declaração): **R$ 491,00**
-- Item de gasto (alínea "a"): **R$ 982,00**
-
-Base legal: Decreto Federal nº 12.807/2025 e Decreto Estadual nº 22.595/2024.`,
+    q: "Como devo inserir as notas fiscais no SEI?",
+    keywords: ["nota fiscal sei", "como inserir nf", "documento por documento", "1 documento"],
+    a: `Cada documento hábil (NF-e, cupom fiscal, recibo) deve ser inserido **como um documento SEI separado** — regra de **1 arquivo = 1 documento**. Documentos **Nato-digitais** exigem o "Atesto de documentos externos"; documentos **digitalizados** devem ser **autenticados**.`,
   },
   {
-    title: "Prazo de Comprovação",
+    q: "O que é o atesto e quem deve assiná-lo?",
+    keywords: ["atesto", "art. 27", "art 27", "superior hierárquico", "atestar"],
+    a: `Conforme **Art. 27 da IN SAF 21/2017**, o **atesto** do documento hábil deve ser feito pelo **superior hierárquico imediato** ao responsável pela aplicação do Adiantamento.`,
+  },
+  {
+    q: "Como deve ser o documento hábil (nota fiscal/recibo)?",
+    keywords: ["documento hábil", "documento habil", "art. 26", "art 26", "rasura", "legível"],
+    a: `Conforme **Art. 26 da IN SAF 21/2017**, o documento hábil deve ser:
+
+- **Original**
+- Emitido em nome da **Secretaria/Órgão e da Unidade Gestora**
+- **Legível**, sem rasuras ou emendas
+- Conter discriminação clara dos itens, quantidades, valores e data`,
+  },
+
+  // ---------- LIMITES ----------
+  {
+    q: "Quais os limites de concessão e aplicação válidos a partir de 01/01/2026?",
+    keywords: [
+      "limite", "limites", "anexo vii", "anexo 7", "2026", "valor concessão",
+      "valor aplicação", "miúda", "miuda", "alínea a", "alinea a", "alínea h", "alinea h",
+      "3929", "491", "982", "decreto 12807", "decreto 22595",
+    ],
+    a: `### Limites — Anexo VII (válidos a partir de 01/01/2026)
+
+**Concessão:**
+- Despesas Miúdas (alínea **"a"**): **R$ 3.929,00**
+- Reparos / Adaptação / Recuperação de Bens Móveis e Imóveis (alínea **"h"**): **R$ 3.929,00**
+
+**Aplicação:**
+- Despesas das alíneas **"a"** e **"e"** sem documento hábil (mediante declaração): **R$ 491,00**
+- Item de gasto (alínea **"a"**): **R$ 982,00**
+
+Base legal: **Decreto Federal nº 12.807/2025** e **Decreto Estadual nº 22.595/2024**.`,
+  },
+  {
+    q: "Qual o valor máximo por item de gasto na alínea 'a'?",
+    keywords: ["valor máximo item", "item de gasto", "982", "limite item"],
+    a: `O limite por **item de gasto** na alínea **"a"** é de **R$ 982,00** (válido a partir de 01/01/2026).`,
+  },
+  {
+    q: "Quando posso usar declaração no lugar de documento hábil?",
+    keywords: ["sem documento hábil", "declaração", "491", "alínea e", "alinea e"],
+    a: `Para despesas das alíneas **"a"** e **"e"** **sem documento hábil**, é admitido o uso de **declaração**, limitada a **R$ 491,00** (a partir de 01/01/2026).`,
+  },
+
+  // ---------- PRAZOS ----------
+  {
+    q: "Qual o prazo para apresentar a comprovação do Adiantamento?",
     keywords: [
       "prazo", "30 dias", "comprovação prazo", "art. 18", "art 18",
       "5 dias úteis", "antecedência", "fim do prazo",
     ],
-    body: `### Prazo para Comprovação (Art. 18, IV da IN SAF 21/2017)
+    a: `### Prazo para Comprovação (Art. 18, IV — IN SAF 21/2017)
 
-- **Até 30 dias consecutivos** após o término da aplicação.
-- A documentação de comprovação deve ser apresentada no mínimo **5 dias úteis antes do fim do prazo** (Art. 18, § único, IV c/c Art. 39, §1º).
-- **Devolução fora do prazo (Art. 37):** atualização monetária + recolhimento à CUTE via DAE em guias separadas.`,
+- **Até 30 dias consecutivos** após o término do período de aplicação.
+- A documentação deve ser apresentada com **no mínimo 5 dias úteis de antecedência** ao fim do prazo (Art. 18, parágrafo único, IV c/c Art. 39, §1º).`,
   },
   {
-    title: "INSS Patronal (PF e MEI)",
+    q: "O que acontece em caso de devolução de recurso fora do prazo?",
+    keywords: ["devolução fora do prazo", "art. 37", "art 37", "atualização monetária", "cute", "dae"],
+    a: `Conforme **Art. 37 da IN SAF 21/2017**, a devolução fora do prazo exige:
+
+- **Atualização monetária** do valor a ser devolvido
+- **Recolhimento à CUTE via DAE** em **guias separadas** (principal e atualização)`,
+  },
+
+  // ---------- HIPÓTESES (ART. 5º) ----------
+  {
+    q: "Quais são as hipóteses de uso do Adiantamento previstas no Art. 5º?",
+    keywords: [
+      "hipóteses", "hipoteses", "art. 5", "art 5", "quando usar", "miúda",
+      "pronto pagamento", "secreto", "viagens", "leilão", "leilao",
+      "refeições", "refeicoes",
+    ],
+    a: `### Hipóteses de uso do Adiantamento (Art. 5º — IN SAF 21/2017)
+
+a) Despesas **miúdas e de pronto pagamento**
+b) Despesas de **caráter secreto**
+c) Aquisição de **livros, peças e objetos de coleção**
+d) **Viagens**
+e) Pagamento de **pessoal/salários** em local específico
+f) **Refeições**
+g) (conforme normativa específica)
+h) **Reparos, adaptação e recuperação de bens móveis e imóveis**
+i) **Leilão e aquisição de animais**`,
+  },
+  {
+    q: "Quando é obrigatório apresentar 3 cotações de preço?",
+    keywords: ["3 cotações", "três cotações", "cotação", "cotacao", "art. 9", "art 9"],
+    a: `Conforme **Art. 9º da IN SAF 21/2017**, é obrigatório apresentar **3 cotações** sempre que o valor da aquisição/serviço **ultrapassar o limite definido no Anexo VII**. **Não se aplica à alínea "a"** (despesas miúdas e de pronto pagamento).`,
+  },
+
+  // ---------- INSS ----------
+  {
+    q: "Como funciona o recolhimento do INSS patronal (20%) para prestador PF ou MEI?",
     keywords: [
       "inss", "patronal", "20%", "pessoa física", "pessoa fisica", "pf",
-      "mei", "hidráulica", "elétrica", "alvenaria", "carpintaria",
-      "manutenção veículo", "manutencao veiculo", "darf", "cota patronal",
+      "mei", "hidráulica", "hidraulica", "elétrica", "eletrica", "alvenaria",
+      "carpintaria", "manutenção veículo", "manutencao veiculo", "darf", "cota patronal",
+      "00052495231", "2022.0002525",
     ],
-    body: `### Recolhimento de INSS Patronal (PF e MEI)
+    a: `### Recolhimento de INSS Patronal (PF e MEI)
 
 Para serviços tomados de **pessoa física ou MEI** (hidráulica, elétrica, alvenaria, carpintaria, manutenção/reparo de veículos):
 
 - O Estado contribui com a **cota patronal de 20%**
-- **Não há retenção do INSS do fornecedor** — paga-se à parte com o limite do cartão de Adiantamento
+- **Não há retenção do INSS** do fornecedor — paga-se à parte com o limite do cartão de Adiantamento
 - O militar deve manter limite no cartão para o INSS patronal
 - Preencher a planilha do documento SEI nº **00052495231** com dados do fornecedor **até o último dia do mês indicado na NF**
 - Encaminhar à Unidade Gestora; depois recebe o **DARF** para pagamento com o cartão corporativo
@@ -117,99 +208,101 @@ Para serviços tomados de **pessoa física ou MEI** (hidráulica, elétrica, alv
 
 📞 **Contato DAF:** (71) 99948-6873`,
   },
-  {
-    title: "Retenção de ISS — Simples Nacional (ME/EPP)",
-    keywords: [
-      "iss", "retenção", "retencao", "simples nacional", "me", "epp",
-      "alíquota", "aliquota", "lc 123", "lei complementar 123",
-      "valores fixos", "5%", "2%",
-    ],
-    body: `### Retenção de ISS — ME/EPP optantes pelo Simples Nacional
-Base legal: **Lei Complementar 123/06, art. 21, §4º**.
 
-**Regras:**
-- **I** — Alíquota de retenção informada no documento fiscal = alíquota efetiva do mês anterior
-- **II** — Mês de início de atividades: alíquota efetiva de **2%**
-- **IV** — Se o ISS for tributado por **valores fixos mensais** no Simples → **NÃO HÁ RETENÇÃO**
-- **V** — Se a empresa não informar a alíquota: aplicar **5%**
-- **VII** — O valor retido é definitivo e não compõe partilha do Simples
+  // ---------- ISS / SIMPLES NACIONAL ----------
+  {
+    q: "Quando NÃO devo reter ISS de empresa optante pelo Simples Nacional?",
+    keywords: [
+      "não reter iss", "nao reter iss", "valores fixos", "simples nacional", "lc 123 iv",
+      "iss simples", "tributado fixo",
+    ],
+    a: `Conforme **LC 123/06, art. 21, §4º, IV**: **NÃO HÁ RETENÇÃO** de ISS quando a empresa for ME/EPP optante pelo Simples Nacional **e** o ISS estiver sendo tributado por **valores fixos mensais** no regime do Simples.`,
+  },
+  {
+    q: "Qual alíquota de ISS aplicar quando a empresa não informa no documento fiscal?",
+    keywords: ["alíquota", "aliquota", "5%", "não informou", "nao informou", "iss padrão", "lc 123 v"],
+    a: `Conforme **LC 123/06, art. 21, §4º, V**: quando a empresa optante pelo Simples Nacional **não informar** a alíquota efetiva no documento fiscal, deve-se aplicar a alíquota padrão de **5%** sobre o valor do serviço.`,
+  },
+  {
+    q: "Como calcular a alíquota de retenção de ISS para optante do Simples Nacional?",
+    keywords: ["alíquota retenção iss", "calcular iss", "lc 123 i", "lc 123 ii", "mês anterior"],
+    a: `### Retenção de ISS — ME/EPP Simples Nacional (LC 123/06, art. 21, §4º)
+
+- **I** — Alíquota informada no documento fiscal = **alíquota efetiva do mês anterior**
+- **II** — No **mês de início de atividades**, aplicar **2%**
+- **IV** — Se ISS for tributado por **valores fixos mensais** → **NÃO retém**
+- **V** — Se a empresa **não informar** alíquota → aplicar **5%**
+- **VII** — O valor retido é **definitivo** e não compõe partilha do Simples
 
 **Procedimento:**
 1. Verificar se é optante: https://www8.receita.fazenda.gov.br/simplesnacional/
 2. Verificar enquadramento ME/EPP: consulta CNPJ na Receita Federal`,
   },
+
+  // ---------- CONTRIBUINTE INDIVIDUAL ----------
   {
-    title: "Contribuinte Individual (Anexo V)",
+    q: "Quais são as obrigações do responsável quando contrata Contribuinte Individual?",
     keywords: [
-      "contribuinte individual", "anexo v", "gps", "elemento 36",
-      "elemento 47", "gfip", "previdenciária", "previdenciaria",
-      "inscrever inss",
+      "contribuinte individual", "anexo v", "gps", "elemento 36", "elemento 47",
+      "gfip", "previdenciária", "previdenciaria", "inscrever inss",
     ],
-    body: `### Contribuinte Individual (Anexo V da IN SAF 21/2017)
+    a: `### Contribuinte Individual (Anexo V — IN SAF 21/2017)
 
 **Responsável pelo Adiantamento:**
-- Inscrever prestador PF no INSS, se necessário
-- Calcular retenção previdenciária e pagar valor líquido ao prestador
-- Fornecer recibo conforme legislação INSS
-- Enviar mensalmente CI à Unidade Gestora com lista (CPF, inscrição INSS, PAD, valor retido)
+- **Inscrever** o prestador PF no INSS, se necessário
+- **Calcular** retenção previdenciária e pagar **valor líquido** ao prestador
+- **Fornecer recibo** conforme legislação INSS
+- Enviar **mensalmente CI** à Unidade Gestora com lista (CPF, inscrição INSS, PAD, valor retido)
 - Anexar cópia da CI ao processo de comprovação
 
 **Unidade Gestora:**
-- Recolher mensalmente por **GPS** (elemento 36)
-- Empenhar cota patronal mensalmente (elemento 47), separada das demais despesas
+- Recolher mensalmente por **GPS** (elemento **36**)
+- Empenhar **cota patronal** mensalmente (elemento **47**), separada das demais despesas
 - Emitir **GFIP** mensalmente (www.mpas.gov.br)`,
   },
+
+  // ---------- CONTATO ----------
   {
-    title: "Hipóteses de uso do Adiantamento (Art. 5º)",
-    keywords: [
-      "hipóteses", "hipoteses", "art. 5", "art 5", "quando usar",
-      "miúda", "pronto pagamento", "secreto", "viagens", "leilão", "leilao",
-      "refeições", "refeicoes",
-    ],
-    body: `### Hipóteses de uso do Adiantamento (Art. 5º da IN SAF 21/2017)
-
-a) Despesas miúdas e de pronto pagamento
-b) Despesas de caráter secreto
-c) Aquisição de livros, peças e objetos de coleção
-d) Viagens
-e) Pagamento de pessoal/salários em local específico
-f) Refeições
-g) (conforme normativa)
-h) Reparos, adaptação e recuperação de bens móveis e imóveis
-i) Leilão e aquisição de animais
-
-**Cotação (Art. 9º):** acima do limite, exigir **3 cotações** (não se aplica à alínea "a").
-**Documento hábil (Art. 26):** original, em nome da Secretaria/órgão e UG, legível, sem rasuras.
-**Atesto (Art. 27):** pelo superior hierárquico imediato.`,
-  },
-  {
-    title: "Itens de despesa por subelemento (3.3.90.30)",
-    keywords: [
-      "subelemento", "rubrica", "3.3.90.30", "30.01", "30.02", "30.03",
-      "30.04", "30.05", "30.06", "30.07", "30.16", "30.17", "30.21",
-      "30.22", "30.23", "30.24", "30.25", "30.26", "30.27", "30.28",
-      "30.29", "30.30", "30.39", "30.42", "30.44", "30.45", "30.46",
-      "30.47", "30.48", "30.50", "30.96",
-      "material de escritório", "material de escritorio", "limpeza",
-      "expediente", "informática", "informatica", "alimentação", "alimentacao",
-      "combustível", "combustivel", "lubrificante", "uniforme", "ferramenta",
-      "elétrico", "eletrico", "hidráulico", "hidraulico", "gênero", "genero",
-      "copa", "cozinha", "elemento", "código", "codigo",
-    ],
-    body: `### Itens de despesa por subelemento — 3.3.90.30 (Material de Consumo)
-
-Use a tabela abaixo para identificar **em qual subelemento** um item se enquadra. Quando perguntar "posso comprar X?" ou "em qual rubrica entra Y?", localize o item na lista e informe o **código (ex.: 30.02)** e a **categoria**.
-
-${itensAdiantamento}`,
+    q: "Qual o contato do DAF para dúvidas sobre Adiantamento?",
+    keywords: ["contato", "telefone", "daf", "dúvidas", "duvidas", "99948"],
+    a: `📞 **Coordenação de Finanças e Normatização do DAF/CBMBA: (71) 99948-6873**`,
   },
 ];
+
+// FAQ gerada automaticamente para cada subelemento de despesa
+const FAQ_SUBELEMENTOS: FAQ[] = SUBELEMENTOS.map((sub) => {
+  const examples = sub.items.slice(0, 12).join(", ");
+  const more = sub.items.length > 12 ? ` … (+${sub.items.length - 12} itens)` : "";
+  return {
+    q: `Em qual subelemento entram itens de "${sub.name}"?`,
+    keywords: [
+      sub.code,
+      sub.code.replace(".", ""),
+      `subelemento ${sub.code}`,
+      `rubrica ${sub.code}`,
+      `elemento ${sub.code}`,
+      sub.name.toLowerCase(),
+      ...sub.items.map((i) => i.toLowerCase()),
+    ],
+    a: `### ${sub.code} — ${sub.name}
+
+${sub.desc || ""}
+
+**Exemplos de itens enquadrados nesta rubrica:**
+${examples}${more}
+
+> Rubrica orçamentária: **3.3.90.30.${sub.code.split(".")[1]}**`,
+  };
+});
+
+const FAQ: FAQ[] = [...FAQ_NORMATIVO, ...FAQ_SUBELEMENTOS];
 
 // ----- Normalização e busca por palavras-chave -----
 function normalize(s: string): string {
   return s
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "") // remove acentos
+    .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9\s.]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
@@ -221,7 +314,8 @@ const STOPWORDS = new Set([
   "ao", "aos", "como", "qual", "quais", "ser", "sao", "tem", "ha", "ou",
   "mais", "meu", "minha", "voce", "voces", "isso", "isto", "esse", "essa",
   "este", "esta", "ja", "nao", "sim", "pelo", "pela", "sobre", "quando",
-  "onde", "porque",
+  "onde", "porque", "fazer", "posso", "devo", "deve", "entra", "entram",
+  "qual", "quais",
 ]);
 
 function tokenize(s: string): string[] {
@@ -230,43 +324,47 @@ function tokenize(s: string): string[] {
     .filter((w) => w.length >= 3 && !STOPWORDS.has(w));
 }
 
-function searchKB(query: string): { entry: typeof KB[number]; score: number }[] {
+function searchFAQ(query: string): { entry: FAQ; score: number }[] {
   const qNorm = normalize(query);
   const qTokens = tokenize(query);
   if (qTokens.length === 0) return [];
 
-  return KB.map((entry) => {
+  return FAQ.map((entry) => {
     const haystack = normalize(
-      entry.title + " " + entry.keywords.join(" ") + " " + entry.body,
+      entry.q + " " + entry.keywords.join(" ") + " " + entry.a,
     );
+    const qHay = normalize(entry.q);
     const kwSet = entry.keywords.map(normalize);
 
     let score = 0;
-    // pontua keyword exata (frase) na pergunta
+    // Pergunta inteira muito similar
+    if (qNorm && qHay.includes(qNorm)) score += 20;
+
+    // Keyword exata aparece na pergunta do usuário
     for (const kw of kwSet) {
-      if (kw && qNorm.includes(kw)) score += 5;
+      if (kw && qNorm.includes(kw)) score += 6;
     }
-    // pontua tokens
+
+    // Tokens individuais
     for (const t of qTokens) {
-      if (haystack.includes(` ${t} `) || haystack.startsWith(`${t} `) || haystack.endsWith(` ${t}`)) {
-        score += 2;
-      } else if (haystack.includes(t)) {
-        score += 1;
-      }
+      if (qHay.includes(t)) score += 3; // peso maior se está na pergunta da FAQ
+      else if (haystack.includes(t)) score += 1;
     }
+
     return { entry, score };
   })
     .filter((r) => r.score > 0)
     .sort((a, b) => b.score - a.score);
 }
 
-const FALLBACK = `Não encontrei essa informação na base normativa carregada.
+const FALLBACK = `Não encontrei essa informação na **base de FAQ** carregada.
 
-Para casos específicos, entre em contato com a **Coordenação de Finanças e Normatização do DAF/CBMBA**:
+Tente reformular a pergunta usando termos como:
+*concessão, comprovação, INSS, ISS, Simples Nacional, limites, prazo, subelemento (30.xx), Art. 5º, cotações, devolução*.
 
-📞 **(71) 99948-6873**
+Para casos específicos, contate a **Coordenação de Finanças e Normatização do DAF/CBMBA**:
 
-Você também pode tentar reformular a pergunta usando termos como: *concessão, comprovação, INSS, ISS, limites, prazo, subelemento, Art. 5º*.`;
+📞 **(71) 99948-6873**`;
 
 export const chatWithDAF = createServerFn({ method: "POST" })
   .inputValidator((data) => inputSchema.parse(data))
@@ -276,15 +374,17 @@ export const chatWithDAF = createServerFn({ method: "POST" })
       return { content: "Olá! Faça sua pergunta sobre Verba de Adiantamento." };
     }
 
-    const results = searchKB(lastUser.content);
+    const results = searchFAQ(lastUser.content);
     if (results.length === 0) {
       return { content: FALLBACK };
     }
 
     const top = results.slice(0, 2);
     const content =
-      top.map((r) => r.entry.body).join("\n\n---\n\n") +
-      "\n\n---\n*Fonte: IN SAF nº 21/2017 — DAF/CBMBA · (71) 99948-6873*";
+      top
+        .map((r) => `**❓ ${r.entry.q}**\n\n${r.entry.a}`)
+        .join("\n\n---\n\n") +
+      "\n\n---\n*Fonte: FAQ da IN SAF nº 21/2017 — DAF/CBMBA · (71) 99948-6873*";
 
     return { content };
   });
