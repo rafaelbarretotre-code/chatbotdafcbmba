@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import brasao from "@/assets/cbmba-brasao.png";
 import { chatWithDAF } from "@/lib/chat.functions";
+import { FAQ_CATEGORIES, FAQ_INDEX, type FAQCategory } from "@/lib/faq-index";
 
 export const Route = createFileRoute("/adiantamento")({
   head: () => ({
