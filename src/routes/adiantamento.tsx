@@ -47,6 +47,7 @@ function ChatPage() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState<FAQCategory | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
