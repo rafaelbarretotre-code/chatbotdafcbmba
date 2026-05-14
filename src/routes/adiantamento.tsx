@@ -115,6 +115,46 @@ function ChatPage() {
         </div>
       </header>
 
+      {/* Navegação por categorias */}
+      <nav className="sticky top-[64px] z-10 border-b border-border bg-background/95 backdrop-blur">
+        <div className="mx-auto max-w-4xl px-4 py-2">
+          <div className="flex flex-wrap gap-1.5">
+            {FAQ_CATEGORIES.map((cat) => {
+              const active = activeCategory === cat;
+              return (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(active ? null : cat)}
+                  className={`rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wider transition-colors ${
+                    active
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border bg-card text-muted-foreground hover:border-primary/40 hover:text-foreground"
+                  }`}
+                >
+                  {cat}
+                </button>
+              );
+            })}
+          </div>
+          {activeCategory && (
+            <div className="mt-3 grid gap-1.5 border-t border-border/60 pt-3 sm:grid-cols-2">
+              {FAQ_INDEX.filter((f) => f.category === activeCategory).map((f) => (
+                <button
+                  key={f.question}
+                  onClick={() => {
+                    send(f.question);
+                    setActiveCategory(null);
+                  }}
+                  className="rounded-md border border-border bg-card p-2.5 text-left text-xs text-card-foreground transition-all hover:border-primary/40 hover:bg-primary/5"
+                >
+                  {f.question}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </nav>
+
       {/* Mensagens */}
       <div
         ref={scrollRef}
